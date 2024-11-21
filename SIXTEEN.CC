@@ -1,3 +1,4 @@
+--DONT SKID IT NIGGA
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
@@ -5,7 +6,7 @@ local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 local CamlockState = false
-local Prediction = 0.12746444
+local Prediction = 0.165249
 local enemy = nil
 
 -- Create ScreenGui
