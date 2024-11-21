@@ -88,7 +88,7 @@ end
 -- Function to toggle camlock
 local function ToggleCamlock()
     CamlockState = not CamlockState
-    ToggleButton.Text = CamlockState and "SIXTEEN on”¥" or "SIXTEEN Off"
+    ToggleButton.Text = CamlockState and "SIXTEEN on" or "SIXTEEN Off"
 
     if CamlockState then
         enemy = FindNearestEnemy()
