@@ -1,0 +1,172 @@
+-- DO NOT SKID IT
+-- DO NOT SKID IT
+-- DO NOT SKID IT
+-- DO NOT SKID IT
+-- DO NOT SKID IT
+-- DO NOT SKID IT
+-- DO NOT SKID IT
+-- DO NOT SKID IT
+-- DO NOT SKID IT
+-- SKIDDER ITS NIGGA
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local CamlockState = false
+local Prediction = 0.145374
+local enemy = nil
+
+-- Create ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+-- Create Frame
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 200, 0, 70)
+Frame.Position = UDim2.new(0.5, -100, 0.1, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Frame.BorderSizePixel = 0
+Frame.Parent = ScreenGui
+Frame.AnchorPoint = Vector2.new(0.5, 0)
+
+-- Add UICorner for rounded corners
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = Frame
+
+-- Create Toggle Button
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Size = UDim2.new(0, 180, 0, 50)
+ToggleButton.Position = UDim2.new(0.5, 0, 0.5, 0)
+ToggleButton.Text = "SVR.Ware"
+ToggleButton.TextColor3 = Color3.fromRGB(0, 0, 255) -- Blue text color
+ToggleButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+ToggleButton.BorderSizePixel = 0
+ToggleButton.Font = Enum.Font.SourceSansBold
+ToggleButton.TextSize = 24
+ToggleButton.AnchorPoint = Vector2.new(0.5, 0.5)
+ToggleButton.Parent = Frame
+
+-- Add UICorner for rounded corners
+local ButtonCorner = Instance.new("UICorner")
+ButtonCorner.CornerRadius = UDim.new(0, 10)
+ButtonCorner.Parent = ToggleButton
+
+-- Add UIGradient for background design
+local UIGradient = Instance.new("UIGradient")
+UIGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(150, 150, 150)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
+})
+UIGradient.Rotation = 45
+UIGradient.Parent = ToggleButton
+
+-- Add UIStroke for border
+local UIStroke = Instance.new("UIStroke")
+UIStroke.Thickness = 2
+UIStroke.Color = Color3.fromRGB(0, 255, 0)
+UIStroke.Parent = ToggleButton
+
+-- Function to find the nearest enemy
+local function FindNearestEnemy()
+    local ClosestDistance, ClosestPlayer = math.huge, nil
+    local CenterPosition = Vector2.new(game:GetService("GuiService"):GetScreenResolution().X / 2, game:GetService("GuiService"):GetScreenResolution().Y / 2)
+
+    for _, Player in ipairs(Players:GetPlayers()) do
+        if Player ~= LocalPlayer then
+            local Character = Player.Character
+            if Character and Character:FindFirstChild("HumanoidRootPart") and Character.Humanoid.Health > 0 then
+                local Position, IsVisibleOnViewport = workspace.CurrentCamera:WorldToViewportPoint(Character.HumanoidRootPart.Position)
+                if IsVisibleOnViewport then
+                    local Distance = (CenterPosition - Vector2.new(Position.X, Position.Y)).Magnitude
+                    if Distance < ClosestDistance then
+                        ClosestPlayer = Character.HumanoidRootPart
+                        ClosestDistance = Distance
+                    end
+                end
+            end
+        end
+    end
+
+    return ClosestPlayer
+end
+
+-- Function to toggle camlock
+local function ToggleCamlock()
+    CamlockState = not CamlockState
+    ToggleButton.Text = CamlockState and "SVR.Ware On" or "SVR.Ware Off"
+
+    if CamlockState then
+        enemy = FindNearestEnemy()
+    else
+        enemy = nil
+    end
+
+    print("CamlockState: " .. tostring(CamlockState))
+end
+
+-- Aim the camera at the nearest enemy's HumanoidRootPart
+RunService.Heartbeat:Connect(function()
+    if CamlockState and enemy then
+        local camera = workspace.CurrentCamera
+        camera.CFrame = CFrame.new(camera.CFrame.p, enemy.Position + enemy.Velocity * Prediction)
+    end
+end)
+
+-- Connect toggle button
+ToggleButton.MouseButton1Click:Connect(ToggleCamlock)
+
+-- Make the Frame draggable
+local dragging = false
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+Frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = Frame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+Frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and input == dragInput then
+        update(input)
+    end
+end)
+
+-- Rainbow frame effect
+local colors = {Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 127, 0), Color3.fromRGB(255, 255, 0), Color3.fromRGB(0, 255, 0), Color3.fromRGB(0, 0, 255), Color3.fromRGB(75, 0, 130), Color3.fromRGB(139, 0, 255)}
+local index = 1
+
+coroutine.wrap(function()
+    while true do
+        local nextColor = colors[index]
+        index = index % #colors + 1
+        local tween = TweenService:Create(Frame, TweenInfo.new(1), {BackgroundColor3 = nextColor})
+        tween:Play()
+        tween.Completed:Wait()
+    end
+end)()
